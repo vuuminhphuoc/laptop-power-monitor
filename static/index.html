@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laptop Power Monitor</title>
+    <meta name="description" content="Real-time laptop power consumption and battery status monitoring">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ Laptop Power Monitor</h1>
+            <p class="subtitle">Real-time Power & Battery Status</p>
+        </header>
+
+        <div class="status-bar" id="statusBar">
+            <span id="statusText">Connecting...</span>
+            <span class="status-indicator" id="statusIndicator"></span>
+        </div>
+
+        <main class="dashboard">
+            <!-- Power Source Card -->
+            <div class="card power-source-card">
+                <div class="card-header">
+                    <h2>Nguồn Điện</h2>
+                    <div class="icon">🔌</div>
+                </div>
+                <div class="card-body">
+                    <div class="power-source" id="powerSource">
+                        <span class="source-badge">Loading...</span>
+                    </div>
+                    <div class="status-detail" id="chargingStatus">Checking...</div>
+                    <div class="power-state-detail" id="powerStateDetail">Analyzing...</div>
+                </div>
+            </div>
+
+            <!-- Power Flow Diagram -->
+            <div class="card power-flow-card">
+                <div class="card-header">
+                    <h2>Luồng Điện</h2>
+                    <div class="icon">⚡</div>
+                </div>
+                <div class="card-body">
+                    <div class="power-flow-diagram">
+                        <div class="flow-item">
+                            <div class="flow-icon">🔌</div>
+                            <div class="flow-label">AC Input</div>
+                            <div class="flow-value" id="flowAcInput">-- W</div>
+                        </div>
+                        <div class="flow-arrows">
+                            <div class="arrow-down" id="arrowToBattery">
+                                <span class="arrow-label" id="labelToBattery">To Battery</span>
+                                <span class="arrow-value" id="valueToBattery">-- W</span>
+                            </div>
+                            <div class="arrow-down" id="arrowToSystem">
+                                <span class="arrow-label">To System</span>
+                                <span class="arrow-value" id="valueToSystem">-- W</span>
+                            </div>
+                        </div>
+                        <div class="flow-targets">
+                            <div class="flow-item">
+                                <div class="flow-icon">🔋</div>
+                                <div class="flow-label">Battery</div>
+                                <div class="flow-status" id="batteryFlowStatus">--</div>
+                            </div>
+                            <div class="flow-item">
+                                <div class="flow-icon">💻</div>
+                                <div class="flow-label">System</div>
+                                <div class="flow-status">Active</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Battery Gauge -->
+            <div class="card battery-card">
+                <div class="card-header">
+                    <h2>Pin</h2>
+                    <div class="icon">🔋</div>
+                </div>
+                <div class="card-body">
+                    <div class="battery-gauge">
+                        <svg viewBox="0 0 200 200" class="gauge">
+                            <circle cx="100" cy="100" r="85" class="gauge-bg"></circle>
+                            <circle cx="100" cy="100" r="85" class="gauge-progress" id="batteryGauge"></circle>
+                            <text x="100" y="95" class="gauge-value" id="batteryPercent">--%</text>
+                            <text x="100" y="120" class="gauge-label">Battery</text>
+                        </svg>
+                    </div>
+                    <div class="time-remaining" id="timeRemaining">Calculating...</div>
+                </div>
+            </div>
+
+            <!-- Power Input Card -->
+            <div class="card metric-card">
+                <div class="card-header">
+                    <h2>Điện Nhận Vào</h2>
+                    <div class="icon">📥</div>
+                </div>
+                <div class="card-body">
+                    <div class="metric-value" id="powerInput">
+                        <span class="value">--</span>
+                        <span class="unit">W</span>
+                    </div>
+                    <div class="metric-label">Watt from AC</div>
+                </div>
+            </div>
+
+            <!-- Power Consumption Card -->
+            <div class="card metric-card">
+                <div class="card-header">
+                    <h2>Điện Tiêu Thụ</h2>
+                    <div class="icon">⚙️</div>
+                </div>
+                <div class="card-body">
+                    <div class="metric-value" id="powerConsumption">
+                        <span class="value">--</span>
+                        <span class="unit">W</span>
+                    </div>
+                    <div class="metric-label">Usage Rate</div>
+                </div>
+            </div>
+
+            <!-- Voltage Card -->
+            <div class="card metric-card">
+                <div class="card-header">
+                    <h2>Điện Áp</h2>
+                    <div class="icon">⚡</div>
+                </div>
+                <div class="card-body">
+                    <div class="metric-value" id="voltageDisplay">
+                        <span class="value">--</span>
+                        <span class="unit">V</span>
+                    </div>
+                    <div class="metric-label">Voltage</div>
+                </div>
+            </div>
+
+            <!-- Current Card -->
+            <div class="card metric-card">
+                <div class="card-header">
+                    <h2>Dòng Điện</h2>
+                    <div class="icon">🔋</div>
+                </div>
+                <div class="card-body">
+                    <div class="metric-value" id="currentDisplay">
+                        <span class="value">--</span>
+                        <span class="unit">A</span>
+                    </div>
+                    <div class="metric-label">Current</div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Last updated: <span id="lastUpdate">Never</span></p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
