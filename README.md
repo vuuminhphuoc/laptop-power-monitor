@@ -55,11 +55,10 @@ Navigate to [http://localhost:5000](http://localhost:5000)
 
 You can create a desktop shortcut for easy access:
 
-1. Right-click `create_shortcut.ps1`
-2. Select **Run with PowerShell**
-3. A shortcut named "Laptop Power Monitor" will appear on your desktop
+1. Double-click `setup_shortcut.bat`
+2. A shortcut named "Laptop Power Monitor" will appear on your desktop
 
-Alternatively, you can just double-click `run.bat` to start the application.
+Alternatively, you can just double-click `run.bat` to start the application directly.
 
 ## 📦 Dependencies
 
