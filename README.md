@@ -51,6 +51,16 @@ python app.py
 
 Navigate to [http://localhost:5000](http://localhost:5000)
 
+### 🖥️ Create Desktop Shortcut (Optional)
+
+You can create a desktop shortcut for easy access:
+
+1. Right-click `create_shortcut.ps1`
+2. Select **Run with PowerShell**
+3. A shortcut named "Laptop Power Monitor" will appear on your desktop
+
+Alternatively, you can just double-click `run.bat` to start the application.
+
 ## 📦 Dependencies
 
 - **Flask** - Web framework
