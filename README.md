@@ -6,6 +6,12 @@ A real-time web application to monitor laptop power consumption, battery status,
 ![Python](https://img.shields.io/badge/Python-3.8+-blue)
 ![Flask](https://img.shields.io/badge/Flask-3.0-lightgrey)
 
+## 📸 Screenshot
+
+![Laptop Power Monitor Dashboard](screenshots/dashboard.png)
+
+*Real-time monitoring dashboard with modern dark mode UI*
+
 ## ✨ Features
 
 - **Real-time Monitoring**: Updates every 2 seconds
