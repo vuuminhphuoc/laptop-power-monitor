@@ -11,6 +11,78 @@ CORS(app)
 # Battery history tracking (store last 10 readings)
 battery_history = deque(maxlen=10)
 
+def get_battery_health():
+    """Get battery health information using powercfg battery report"""
+    health_data = {
+        'designCapacity': None,
+        'fullChargeCapacity': None,
+        'cycleCount': None,
+        'batteryHealth': None,
+        'batteryCondition': 'Unknown'
+    }
+    
+    if os.name == 'nt':
+        try:
+            import subprocess
+            import tempfile
+            import re
+            
+            # Generate battery report
+            report_path = os.path.join(tempfile.gettempdir(), 'battery-report.html')
+            subprocess.run(['powercfg', '/batteryreport', '/output', report_path], 
+                         capture_output=True, timeout=5)
+            
+            # Read and parse the report
+            if os.path.exists(report_path):
+                with open(report_path, 'r', encoding='utf-16-le') as f:
+                    content = f.read()
+                
+                # Extract DESIGN CAPACITY
+                design_match = re.search(r'DESIGN CAPACITY</td>.*?<td.*?>([0-9,]+)\s*mWh', content, re.DOTALL)
+                if design_match:
+                    health_data['designCapacity'] = int(design_match.group(1).replace(',', ''))
+                
+                # Extract FULL CHARGE CAPACITY
+                full_charge_match = re.search(r'FULL CHARGE CAPACITY</td>.*?<td.*?>([0-9,]+)\s*mWh', content, re.DOTALL)
+                if full_charge_match:
+                    health_data['fullChargeCapacity'] = int(full_charge_match.group(1).replace(',', ''))
+                
+                # Extract CYCLE COUNT
+                cycle_match = re.search(r'CYCLE COUNT</td>.*?<td.*?>([0-9,]+)', content, re.DOTALL)
+                if cycle_match:
+                    health_data['cycleCount'] = int(cycle_match.group(1).replace(',', ''))
+                
+                # Calculate battery health percentage
+                if health_data['designCapacity'] and health_data['fullChargeCapacity']:
+                    design = health_data['designCapacity']
+                    full_charge = health_data['fullChargeCapacity']
+                    if design > 0:
+                        health_percentage = (full_charge / design) * 100
+                        health_data['batteryHealth'] = round(health_percentage, 1)
+                        
+                        # Determine battery condition
+                        if health_percentage >= 90:
+                            health_data['batteryCondition'] = 'Excellent'
+                        elif health_percentage >= 70:
+                            health_data['batteryCondition'] = 'Good'
+                        elif health_percentage >= 50:
+                            health_data['batteryCondition'] = 'Fair'
+                        elif health_percentage >= 30:
+                            health_data['batteryCondition'] = 'Poor'
+                        else:
+                            health_data['batteryCondition'] = 'Replace Soon'
+                
+                # Clean up
+                try:
+                    os.remove(report_path)
+                except:
+                    pass
+                    
+        except Exception as e:
+            print(f"Error getting battery health from powercfg: {e}")
+    
+    return health_data
+
 def detect_power_state(battery, history):
     """Detect detailed power state based on battery trends"""
     current_percent = battery.percent
@@ -125,6 +197,9 @@ def get_power_status():
         # Detect detailed power state
         power_state, power_state_text = detect_power_state(battery, battery_history)
         
+        # Get battery health information
+        battery_health = get_battery_health()
+        
         # Determine if battery is being used
         battery_in_use = power_state in ['discharging', 'battery_stable', 'heavy_load']
         battery_charging = power_state in ['charging', 'charging_stable', 'trickle_charge']
@@ -205,7 +280,9 @@ def get_power_status():
                 'toBattery': round(power_to_battery, 1),
                 'toSystem': round(power_to_system, 1),
                 'fromBattery': round(-power_to_battery, 1) if power_to_battery < 0 else 0
-            }
+            },
+            # Battery Health
+            'batteryHealth': battery_health
         }
     
     except Exception as e:

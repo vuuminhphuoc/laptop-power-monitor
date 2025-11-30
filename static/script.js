@@ -16,6 +16,12 @@ const powerConsumption = document.getElementById('powerConsumption');
 const voltageDisplay = document.getElementById('voltageDisplay');
 const currentDisplay = document.getElementById('currentDisplay');
 const lastUpdate = document.getElementById('lastUpdate');
+// Battery Health Elements
+const healthPercent = document.getElementById('healthPercent');
+const healthGauge = document.getElementById('healthGauge');
+const healthCondition = document.getElementById('healthCondition');
+const cycleCount = document.getElementById('cycleCount');
+const capacityInfo = document.getElementById('capacityInfo');
 
 // State
 let updateTimer = null;
@@ -48,6 +54,29 @@ function updateBatteryGauge(percent) {
         batteryGauge.style.stroke = '#f59e0b'; // Orange
     } else {
         batteryGauge.style.stroke = '#ef4444'; // Red
+    }
+}
+
+/**
+ * Update health gauge animation
+ */
+function updateHealthGauge(percent) {
+    const circumference = 534; // 2 * PI * 85
+    const offset = circumference - (percent / 100) * circumference;
+
+    healthGauge.style.strokeDashoffset = offset;
+
+    // Change color based on health level
+    if (percent >= 90) {
+        healthGauge.style.stroke = '#10b981'; // Green - Excellent
+    } else if (percent >= 70) {
+        healthGauge.style.stroke = '#22c55e'; // Light green - Good
+    } else if (percent >= 50) {
+        healthGauge.style.stroke = '#f59e0b'; // Orange - Fair
+    } else if (percent >= 30) {
+        healthGauge.style.stroke = '#fb923c'; // Light red - Poor
+    } else {
+        healthGauge.style.stroke = '#ef4444'; // Red - Replace Soon
     }
 }
 
@@ -198,6 +227,60 @@ function updateUI(data) {
     // Update current
     if (currentDisplay && data.current !== undefined) {
         updateMetric(currentDisplay, data.current.toFixed(2));
+    }
+
+    // Update battery health
+    if (data.batteryHealth) {
+        const health = data.batteryHealth;
+
+        // Update health percentage and gauge
+        if (health.batteryHealth !== null && health.batteryHealth !== undefined) {
+            healthPercent.textContent = `${Math.round(health.batteryHealth)}%`;
+            updateHealthGauge(health.batteryHealth);
+        } else {
+            healthPercent.textContent = 'N/A';
+            healthGauge.style.strokeDashoffset = 534; // Empty gauge
+        }
+
+        // Update condition badge
+        if (healthCondition) {
+            const badge = healthCondition.querySelector('.condition-badge');
+            if (badge && health.batteryCondition) {
+                badge.textContent = health.batteryCondition;
+
+                // Color coding
+                badge.className = 'condition-badge';
+                if (health.batteryCondition === 'Excellent') {
+                    badge.classList.add('excellent');
+                } else if (health.batteryCondition === 'Good') {
+                    badge.classList.add('good');
+                } else if (health.batteryCondition === 'Fair') {
+                    badge.classList.add('fair');
+                } else if (health.batteryCondition === 'Poor') {
+                    badge.classList.add('poor');
+                } else if (health.batteryCondition === 'Replace Soon') {
+                    badge.classList.add('replace');
+                } else {
+                    badge.classList.add('unknown');
+                }
+            }
+        }
+
+        // Update cycle count
+        if (cycleCount) {
+            cycleCount.textContent = health.cycleCount !== null && health.cycleCount !== undefined
+                ? health.cycleCount
+                : 'N/A';
+        }
+
+        // Update capacity info
+        if (capacityInfo) {
+            if (health.fullChargeCapacity && health.designCapacity) {
+                capacityInfo.textContent = `${health.fullChargeCapacity} / ${health.designCapacity} mWh`;
+            } else {
+                capacityInfo.textContent = 'N/A';
+            }
+        }
     }
 
     // Update last update time

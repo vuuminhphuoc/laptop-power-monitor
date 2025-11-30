@@ -95,6 +95,38 @@
                 </div>
             </div>
 
+            <!-- Battery Health Card -->
+            <div class="card battery-health-card">
+                <div class="card-header">
+                    <h2>Sức Khỏe Pin</h2>
+                    <div class="icon">💚</div>
+                </div>
+                <div class="card-body">
+                    <div class="health-gauge">
+                        <svg viewBox="0 0 200 200" class="gauge">
+                            <circle cx="100" cy="100" r="85" class="gauge-bg"></circle>
+                            <circle cx="100" cy="100" r="85" class="gauge-progress health-gauge-progress"
+                                id="healthGauge"></circle>
+                            <text x="100" y="95" class="gauge-value" id="healthPercent">--%</text>
+                            <text x="100" y="120" class="gauge-label">Health</text>
+                        </svg>
+                    </div>
+                    <div class="health-condition" id="healthCondition">
+                        <span class="condition-badge">Checking...</span>
+                    </div>
+                    <div class="health-details">
+                        <div class="health-metric">
+                            <span class="metric-label">🔄 Cycle Count:</span>
+                            <span class="metric-value" id="cycleCount">--</span>
+                        </div>
+                        <div class="health-metric">
+                            <span class="metric-label">⚡ Current / Design:</span>
+                            <span class="metric-value" id="capacityInfo">-- / -- mWh</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Power Input Card -->
             <div class="card metric-card">
                 <div class="card-header">
