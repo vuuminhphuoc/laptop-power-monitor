@@ -24,6 +24,9 @@
         <main class="dashboard">
             <!-- Power Source Card -->
             <div class="card power-source-card">
+                <div class="card-blur-bg">
+                    <div class="icon">🔌</div>
+                </div>
                 <div class="card-header">
                     <h2>Nguồn Điện</h2>
                     <div class="icon">🔌</div>
@@ -192,6 +195,15 @@
             <p>Last updated: <span id="lastUpdate">Never</span></p>
         </footer>
     </div>
+
+    <!-- SVG Blur Filter -->
+    <svg style="position: absolute; width: 0; height: 0;">
+        <defs>
+            <filter id="card-blur" width="500%" height="500%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="28" />
+            </filter>
+        </defs>
+    </svg>
 
     <script src="/static/script.js"></script>
 </body>

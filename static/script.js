@@ -396,3 +396,23 @@ if (document.readyState === 'loading') {
 } else {
     init();
 }
+
+// Card pointer tracking for interactive effects
+document.addEventListener('pointermove', (event) => {
+    const cards = document.querySelectorAll('.card');
+    
+    cards.forEach((card) => {
+        const rect = card.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        const relativeX = event.clientX - centerX;
+        const relativeY = event.clientY - centerY;
+        
+        const x = relativeX / (rect.width / 2);
+        const y = relativeY / (rect.height / 2);
+        
+        card.style.setProperty('--pointer-x', x.toFixed(3));
+        card.style.setProperty('--pointer-y', y.toFixed(3));
+    });
+});
