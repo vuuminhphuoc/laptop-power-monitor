@@ -34,23 +34,44 @@ def get_battery_health():
             
             # Read and parse the report
             if os.path.exists(report_path):
-                with open(report_path, 'r', encoding='utf-16-le') as f:
-                    content = f.read()
+                # Try with error handling for encoding issues
+                try:
+                    with open(report_path, 'r', encoding='utf-16-le') as f:
+                        content = f.read()
+                except UnicodeError:
+                    # Fallback to utf-8 or ignore errors if utf-16 fails
+                    with open(report_path, 'r', encoding='utf-8', errors='ignore') as f:
+                        content = f.read()
                 
+                def extract_value(label, text):
+                    """Helper to safely extract value from next td"""
+                    pattern = r'' + label + r'.*?<td[^>]*>\s*(.*?)\s*</td>'
+                    match = re.search(pattern, text, re.DOTALL | re.IGNORECASE)
+                    if match:
+                        return match.group(1).strip()
+                    return None
+
                 # Extract DESIGN CAPACITY
-                design_match = re.search(r'DESIGN CAPACITY</td>.*?<td.*?>([0-9,]+)\s*mWh', content, re.DOTALL)
-                if design_match:
-                    health_data['designCapacity'] = int(design_match.group(1).replace(',', ''))
+                design_raw = extract_value('DESIGN CAPACITY', content)
+                if design_raw:
+                    # Remove ' mWh', commas, and whitespace
+                    clean_design = re.sub(r'[^0-9]', '', design_raw)
+                    if clean_design:
+                        health_data['designCapacity'] = int(clean_design)
                 
                 # Extract FULL CHARGE CAPACITY
-                full_charge_match = re.search(r'FULL CHARGE CAPACITY</td>.*?<td.*?>([0-9,]+)\s*mWh', content, re.DOTALL)
-                if full_charge_match:
-                    health_data['fullChargeCapacity'] = int(full_charge_match.group(1).replace(',', ''))
+                full_raw = extract_value('FULL CHARGE CAPACITY', content)
+                if full_raw:
+                    clean_full = re.sub(r'[^0-9]', '', full_raw)
+                    if clean_full:
+                        health_data['fullChargeCapacity'] = int(clean_full)
                 
                 # Extract CYCLE COUNT
-                cycle_match = re.search(r'CYCLE COUNT</td>.*?<td.*?>([0-9,]+)', content, re.DOTALL)
-                if cycle_match:
-                    health_data['cycleCount'] = int(cycle_match.group(1).replace(',', ''))
+                cycle_raw = extract_value('CYCLE COUNT', content)
+                if cycle_raw:
+                    clean_cycle = re.sub(r'[^0-9]', '', cycle_raw)
+                    if clean_cycle:
+                        health_data['cycleCount'] = int(clean_cycle)
                 
                 # Calculate battery health percentage
                 if health_data['designCapacity'] and health_data['fullChargeCapacity']:
